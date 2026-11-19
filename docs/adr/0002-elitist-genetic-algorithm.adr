@@ -1,0 +1,24 @@
+# 0002. Elitist genetic algorithm: keep the top 10%, refill by crossover
+
+- Status: Accepted
+- Date: 2026-11-19
+
+Each generation keeps the best tenth of the population and breeds the rest from them, with a
+mutation that only touches wrong letters, which converges on a short word in a few generations.
+
+## Technical details
+- **Candidate** (`GeneticCode`): a string of `len(GOAL)` letters from `GENES`.
+  - Fitness `measure()`: `-1` per position that differs from `GOAL` (0 is a match).
+  - `mutate(5)`: 5 random positions; a position is re-rolled only if it's wrong, so correct
+    letters are never lost.
+  - `crossing_over(other)`: prefix of this one + suffix of the other at a random cut.
+- **Population** (`Pool(100, GOAL, GENES)`): per epoch, mutate everyone, sort by fitness,
+  keep the top `cut_off_percentage = 0.1` (10), refill to 100 with children of two random
+  members of the growing pool (survivors and new children). Stops when the first candidate equals `GOAL`, at most `epoch = 1000`.
+- **Note**: mutation reads the goal, which makes it a guided search more than a blind GA;
+  fine for the lab's demonstration.
+
+## Technologies and alternatives
+- Involved: Python 3 standard library (`random`, `time`).
+- Alternatives: roulette or tournament selection (less greedy, slower here); blind mutation
+  (the textbook form, many more generations).
